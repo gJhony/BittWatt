@@ -55,3 +55,16 @@ El sistema está desacoplado en capas independientes para facilitar pruebas, esc
                                                              │
                                                              ▼
                                                 [Dashboard Web en React]
+```
+
+## Sitio web (frontend)
+
+La interfaz web en React incluye las pantallas de inicio de sesión, registro, resumen energético, alertas, histórico y configuración. Para ejecutarla localmente:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Vite muestra la dirección local en la terminal. Para generar la versión de producción, ejecuta `npm run build` desde `frontend`.
