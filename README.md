@@ -57,8 +57,6 @@ El sistema está desacoplado en capas independientes para facilitar pruebas, esc
                                                 [Dashboard Web en React]
 ```
 
-Revisa también el [modelo de base de datos (`bitwatt_db`)](#-modelo-de-base-de-datos--bitwatt_db) y el script SQL [`bitwatt_db_1711.sql`](bitwatt_db_1711.sql) (si quedó dentro de una carpeta, cambia `bitwatt_db_1711.sql` por `ruta/bitwatt_db_1711.sql`).
-
 ---
 
 ## ✨ Características Principales
@@ -74,7 +72,7 @@ Revisa también el [modelo de base de datos (`bitwatt_db`)](#-modelo-de-base-de-
 
 ## 🗄️ Modelo de Base de Datos (`bitwatt_db`)
 
-El esquema relacional en **MySQL 8.0** está en [bitwatt_db_1711.sql](bitwatt_db_1711.sql) (ajusta la ruta si está en otra carpeta del repo) y organiza la información en bloques separados:
+El esquema relacional en **MySQL 8.0** está en [`./database/bitwatt_db_1711.sql`](./database/bitwatt_db_1711.sql) (dentro de la carpeta [`./database/`](./database/)) y organiza la información en bloques separados:
 
 - **Estructura física y zonas:** Catálogos de edificios, pisos, zonas y circuitos eléctricos para ubicar cada medición.
 - **Nodos y sensores:** Registro de nodos ESP32 y sensores SCT-013 asociados a sus respectivos circuitos y estados operativos.
@@ -85,7 +83,7 @@ El esquema relacional en **MySQL 8.0** está en [bitwatt_db_1711.sql](bitwatt_db
 
 ## 🚀 Instalación y Despliegue
 
-El proyecto se plantea de forma progresiva —iniciando con el prototipo de interfaz en Figma y pruebas controladas antes de escalar a piloto institucional y entorno VPS/cloud—. Los comandos exactos de arranque y variables de entorno dependen de la estructura final de carpetas del repositorio:
+El proyecto se plantea de forma progresiva —iniciando con el prototipo de interfaz en Figma y pruebas controladas antes de escalar a piloto institucional y entorno VPS/cloud—. Los comandos exactos de arranque y variables de entorno dependen de la estructura final de carpetas del repositorio (`backend/`, `database/` y `frontend/`):
 
 1. **Clonar el repositorio:**
    ```bash
@@ -93,9 +91,9 @@ El proyecto se plantea de forma progresiva —iniciando con el prototipo de inte
    cd <carpeta-del-proyecto>
    ```
 2. **Preparar la base de datos:**
-   - Crea la base y carga el esquema desde [bitwatt_db_1711.sql](bitwatt_db_1711.sql) en MySQL 8.0 (nota: la documentación de formulación también contempla PostgreSQL en su propuesta inicial).
+   - Crea la base y carga el esquema desde [`./database/bitwatt_db_1711.sql`](./database/bitwatt_db_1711.sql) en MySQL 8.0 (nota: la documentación de formulación también contempla PostgreSQL en su propuesta inicial).
 3. **Configurar y levantar servicios:**
-   - Configura las credenciales de base de datos, broker **MQTT** y puertos en las variables de entorno del backend (**Node.js**) y del frontend (**React**).
+   - Configura las credenciales de base de datos, broker **MQTT** y puertos en las variables de entorno del backend (`./backend/`) y del frontend (`./frontend/`).
    - Instala dependencias y ejecuta los servicios correspondientes de backend y frontend en entorno local o en un **VPS** (con dominio y SSL/TLS en etapas posteriores).
 4. **Hardware e integración IoT (fase física / piloto):**
    - Calibra los sensores **SCT-013** y el nodo **ESP32** sobre red Wi-Fi local y valida la telemetría por MQTT en un circuito controlado antes de ampliar a más zonas.
