@@ -45,9 +45,10 @@ const pageTitles = {
   overview: ['Resumen', 'Una vista clara de tu consumo energético.'],
   alerts: ['Centro de alertas', 'Detecta oportunidades y actúa a tiempo.'],
   history: ['Histórico de consumo', 'Explora el comportamiento energético de tu edificio.'],
-  settings: ['Configuración', 'Personaliza tu espacio de monitoreo.'],
+  settings: ['Configuración', 'Tarifa, umbrales y zonas monitoreadas.'],
+  help: ['Centro de ayuda', 'Guías y respuestas para aprovechar BitWatt.'],
 };
-const routes = new Set(['overview', 'alerts', 'history', 'settings', 'login', 'register']);
+const routes = new Set(['overview', 'alerts', 'history', 'settings', 'help', 'login', 'register']);
 
 function getRoute() {
   const route = window.location.hash.replace(/^#\/?/, '');
@@ -76,11 +77,11 @@ function Sidebar({ page, setPage, onLogout, open, onClose }) {
           <Logo />
           <button className="icon-button mobile-close" onClick={onClose} aria-label="Cerrar menú"><Icon name="close" /></button>
         </div>
-        <div className="workspace-switcher">
+        <button className="workspace-switcher" onClick={() => setPage('settings')} aria-label="Configurar este espacio de trabajo">
           <span className="workspace-icon"><Icon name="building" size={17} /></span>
           <span className="workspace-copy"><strong>Edificio Central</strong><small>Campus Norte</small></span>
           <Icon name="down" size={15} className="workspace-chevron" />
-        </div>
+        </button>
         <div className="nav-section-label">ESPACIO DE TRABAJO</div>
         <nav className="sidebar-nav" aria-label="Navegación principal">
           {navItems.map((item) => (
@@ -99,7 +100,7 @@ function Sidebar({ page, setPage, onLogout, open, onClose }) {
             <div className="eco-progress"><i /></div>
             <small className="eco-target">64% de tu meta mensual</small>
           </div>
-          <button className="sidebar-help"><Icon name="help" size={17} /><span>Centro de ayuda</span><Icon name="chevron" size={15} /></button>
+          <button className="sidebar-help" onClick={() => { setPage('help'); onClose(); }}><Icon name="help" size={17} /><span>Centro de ayuda</span><Icon name="chevron" size={15} /></button>
           <button className="profile-button" onClick={onLogout}>
             <span className="avatar">GB</span>
             <span className="profile-copy"><strong>Gadiel Bobadilla</strong><small>Administrador</small></span>
@@ -111,7 +112,7 @@ function Sidebar({ page, setPage, onLogout, open, onClose }) {
   );
 }
 
-function Topbar({ title, onMenu, onLogout }) {
+function Topbar({ title, onMenu, onLogout, onNotifications }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <header className="topbar">
@@ -119,7 +120,7 @@ function Topbar({ title, onMenu, onLogout }) {
       <div className="breadcrumb"><span>BitWatt</span><Icon name="chevron" size={14} /><strong>{title}</strong></div>
       <div className="topbar-actions">
         <div className="system-status"><span className="live-dot" /> Sistema en línea</div>
-        <button className="icon-button notification-button" aria-label="Ver notificaciones"><Icon name="bell" /><i /></button>
+        <button className="icon-button notification-button" onClick={onNotifications} aria-label="Ver notificaciones"><Icon name="bell" /><i /></button>
         <div className="profile-menu-wrap">
           <button className="top-avatar" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menú de cuenta">GB</button>
           {menuOpen && <div className="profile-menu"><strong>Gadiel Bobadilla</strong><span>Administrador</span><button onClick={onLogout}>Cerrar sesión</button></div>}
@@ -189,7 +190,6 @@ function Overview({ goTo }) {
     <div className="page-content page-enter">
       <PageHeading eyebrow={dateLabel} title="Buenos días, Gadiel" description="Aquí tienes el resumen energético de tu edificio.">
         <Button onClick={() => goTo('history')}><Icon name="chart" size={16} /> Ver reportes</Button>
-        <Button variant="primary" onClick={() => goTo('settings')}><Icon name="plus" size={17} /> Añadir medidor</Button>
       </PageHeading>
       <div className="metric-grid">
         <MetricCard label="Consumo actual" value="7,195.5" unit="kWh" change="+3.1%" detail="vs. periodo anterior" icon="bolt" />
@@ -208,7 +208,7 @@ function Overview({ goTo }) {
           <div className="chart-summary"><span><i className="legend-dot green-dot" /> Consumo actual</span><span><i className="legend-dot dashed-dot" /> Periodo anterior</span><strong><Icon name="arrow" size={13} /> 7,195.5 kWh <small>en este periodo</small></strong></div>
         </section>
         <section className="panel efficiency-panel">
-          <div className="panel-heading"><div><h2>Eficiencia energética</h2><p>Índice de eficiencia del edificio</p></div><button className="icon-button subtle-button" aria-label="Más información"><Icon name="help" size={17} /></button></div>
+          <div className="panel-heading"><div><h2>Eficiencia energética</h2><p>Índice de eficiencia del edificio</p></div><button className="icon-button subtle-button" onClick={() => goTo('help')} aria-label="Más información sobre eficiencia"><Icon name="help" size={17} /></button></div>
           <div className="efficiency-gauge">
             <svg viewBox="0 0 200 116" aria-hidden="true"><path className="gauge-track" d="M20 100 A80 80 0 0 1 180 100" /><path className="gauge-value" d="M20 100 A80 80 0 0 1 146 31" /></svg>
             <div className="gauge-copy"><strong>78<span>/100</span></strong><small>Muy eficiente</small></div>
@@ -295,6 +295,9 @@ function HistoryPage() {
   const [range, setRange] = useState('30 días');
   const [view, setView] = useState('Consumo');
   const [notice, setNotice] = useState('');
+  const [dateRange, setDateRange] = useState({ from: '2025-10-21', to: '2025-11-20' });
+  const [draftDateRange, setDraftDateRange] = useState(dateRange);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
   const readings = [
     ['20 nov', '248.6', '$708.40', '51.2', '−8.2%'],
     ['19 nov', '271.1', '$773.20', '55.8', '+2.4%'],
@@ -313,17 +316,32 @@ function HistoryPage() {
     setNotice('Reporte descargado correctamente');
     window.setTimeout(() => setNotice(''), 3000);
   };
+  const formatDate = (date) => new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'short' }).format(new Date(`${date}T12:00:00`));
+  const createReport = () => {
+    downloadCsv();
+    setNotice('Reporte generado y descargado correctamente');
+  };
   return (
     <div className="page-content page-enter">
       <PageHeading eyebrow="ANÁLISIS DE DATOS" title="Histórico de consumo" description="Entiende tus tendencias y compara periodos.">
         <Button onClick={downloadCsv}><Icon name="download" size={16} /> Exportar reporte</Button>
-        <Button variant="primary" onClick={() => setNotice('Tu reporte personalizado está listo para configurar')}><Icon name="plus" size={17} /> Crear reporte</Button>
+        <Button variant="primary" onClick={createReport}><Icon name="plus" size={17} /> Crear reporte</Button>
       </PageHeading>
       {notice && <div className="toast-message"><Icon name="check" size={16} />{notice}<button onClick={() => setNotice('')} aria-label="Cerrar"><Icon name="close" size={15} /></button></div>}
       <section className="panel history-panel">
         <div className="history-toolbar">
           <div className="segmented-control">{['Consumo', 'Costo', 'CO₂e'].map((item) => <button key={item} className={view === item ? 'segment-active' : ''} onClick={() => setView(item)}>{item}</button>)}</div>
-          <div className="toolbar-right"><select className="select-control" value={range} onChange={(e) => setRange(e.target.value)} aria-label="Periodo del histórico"><option>7 días</option><option>30 días</option><option>90 días</option><option>Este año</option></select><button className="date-button"><Icon name="clock" size={15} /> 21 oct — 20 nov <Icon name="down" size={14} /></button></div>
+          <div className="toolbar-right">
+            <select className="select-control" value={range} onChange={(e) => setRange(e.target.value)} aria-label="Periodo del histórico"><option>7 días</option><option>30 días</option><option>90 días</option><option>Este año</option></select>
+            <div className="date-picker-wrap">
+              <button className="date-button" onClick={() => { setDraftDateRange(dateRange); setDatePickerOpen((open) => !open); }} aria-expanded={datePickerOpen}><Icon name="clock" size={15} /> {formatDate(dateRange.from)} — {formatDate(dateRange.to)} <Icon name="down" size={14} /></button>
+              {datePickerOpen && <form className="date-picker-popover" onSubmit={(event) => { event.preventDefault(); setDateRange(draftDateRange); setDatePickerOpen(false); }}>
+                <label>Desde<input type="date" value={draftDateRange.from} max={draftDateRange.to} onChange={(event) => setDraftDateRange((current) => ({ ...current, from: event.target.value }))} required /></label>
+                <label>Hasta<input type="date" value={draftDateRange.to} min={draftDateRange.from} onChange={(event) => setDraftDateRange((current) => ({ ...current, to: event.target.value }))} required /></label>
+                <Button type="submit" variant="primary">Aplicar fechas</Button>
+              </form>}
+            </div>
+          </div>
         </div>
         <div className="history-highlight"><div><span className="eyebrow">CONSUMO TOTAL · ÚLTIMOS {range.toUpperCase()}</span><strong>{view === 'Consumo' ? '7,195.5' : view === 'Costo' ? '$20,507' : '1,482'} <small>{view === 'Consumo' ? 'kWh' : view === 'Costo' ? 'MXN' : 'kg CO₂e'}</small></strong></div><span className="history-change"><Icon name="arrowDown" size={14} /> 4.8% <small>vs. periodo anterior</small></span></div>
         <ConsumptionChart />
@@ -338,45 +356,148 @@ function HistoryPage() {
   );
 }
 
+const defaultSettings = {
+  rate: '2.85',
+  emissionFactor: '0.438',
+  openingHour: '7',
+  closingHour: '19',
+  maxDemand: '22',
+  afterHoursPeak: '1500',
+  standbyLimit: '600',
+  circuits: [true, true, true, true, true, true],
+};
+const settingsStorageKey = 'bitwatt-monitoring-settings';
+const monitoredZones = [
+  ['Aulas Edificio A', 'CTO-01', 'Iluminación y contactos de 12 aulas'],
+  ['Laboratorio de Cómputo', 'CTO-02', '40 equipos de escritorio y proyector'],
+  ['Oficinas Administrativas', 'CTO-03', 'Dirección, control escolar y servidores'],
+  ['Biblioteca', 'CTO-04', 'Iluminación, consulta digital'],
+  ['Cafetería', 'CTO-05', 'Refrigeración y equipo de cocina'],
+  ['Climatización Central', 'CTO-06', 'Unidades de aire acondicionado'],
+];
+
+function readSettings() {
+  try {
+    const stored = window.localStorage.getItem(settingsStorageKey);
+    const savedValue = stored ? JSON.parse(stored) : {};
+    const parsed = savedValue && typeof savedValue === 'object' && !Array.isArray(savedValue) ? savedValue : {};
+    const storedCircuits = Array.isArray(parsed.circuits) ? parsed.circuits : [];
+    return {
+      values: {
+        ...defaultSettings,
+        ...parsed,
+        circuits: defaultSettings.circuits.map((enabled, index) => (
+          typeof storedCircuits[index] === 'boolean' ? storedCircuits[index] : enabled
+        )),
+      },
+      error: '',
+    };
+  } catch {
+    return { values: defaultSettings, error: 'No se pudieron leer los valores guardados; se muestran los predeterminados.' };
+  }
+}
+
 function SettingsPage() {
-  const [saved, setSaved] = useState(false);
-  const [form, setForm] = useState({ name: 'Edificio Central', rate: '2.85', threshold: '300', email: 'gadiel@bitwatt.mx' });
-  const [toggles, setToggles] = useState({ critical: true, reports: true, weekly: false });
-  const update = (key) => (e) => setForm((current) => ({ ...current, [key]: e.target.value }));
-  const toggle = (key) => setToggles((current) => ({ ...current, [key]: !current[key] }));
+  const [initial] = useState(readSettings);
+  const [config, setConfig] = useState(initial.values);
+  const [notice, setNotice] = useState(initial.error);
+  const update = (key) => (event) => setConfig((current) => ({ ...current, [key]: event.target.value }));
+  const toggleCircuit = (index) => setConfig((current) => ({
+    ...current,
+    circuits: current.circuits.map((enabled, circuitIndex) => circuitIndex === index ? !enabled : enabled),
+  }));
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(settingsStorageKey, JSON.stringify(config));
+    } catch {
+      setNotice('No se pudieron guardar los cambios en este navegador.');
+    }
+  }, [config]);
+  const resetSettings = () => {
+    setConfig({ ...defaultSettings, circuits: [...defaultSettings.circuits] });
+    setNotice('Valores predeterminados restaurados.');
+  };
+  const field = (label, key, unit, description) => (
+    <label className="reference-field">
+      <span>{label}</span>
+      <div className="reference-input"><input type="number" min="0" step="any" value={config[key]} onChange={update(key)} /><small>{unit}</small></div>
+      <small className="field-description">{description}</small>
+    </label>
+  );
+  return (
+    <div className="page-content page-enter settings-reference">
+      <div className="settings-reference-top">
+        <PageHeading eyebrow="PREFERENCIAS" title="Configuración" description="Tarifa, umbrales y zonas monitoreadas." />
+        {notice && <div className="settings-save-status" role="status"><Icon name="check" size={14} />{notice}<button onClick={() => setNotice('')} aria-label="Cerrar aviso"><Icon name="close" size={14} /></button></div>}
+      </div>
+      <div className="settings-reference-top-grid">
+        <section className="panel reference-panel">
+          <div className="reference-panel-heading"><h2>Tarifa y factor de emisión</h2><p>Se usan para calcular costos en MXN e impacto ambiental</p></div>
+          <div className="reference-fields two-fields">
+            {field('Tarifa eléctrica', 'rate', 'MXN/kWh', 'Precio promedio por kWh de tu recibo CFE (incluye IVA).')}
+            {field('Factor de emisión', 'emissionFactor', 'kg CO₂e/kWh', 'Factor del Sistema Eléctrico Nacional publicado por SEMARNAT/CFE.')}
+          </div>
+        </section>
+        <section className="panel reference-panel">
+          <div className="reference-panel-heading"><h2>Horario operativo</h2><p>Fuera de este horario cualquier consumo se considera atípico</p></div>
+          <div className="reference-fields two-fields">
+            {field('Hora de apertura', 'openingHour', 'h', 'Hora de inicio de actividades (lunes a viernes).')}
+            {field('Hora de cierre', 'closingHour', 'h', 'Hora en que el edificio queda sin ocupantes.')}
+          </div>
+        </section>
+      </div>
+      <section className="panel reference-panel">
+        <div className="reference-panel-heading"><h2>Umbrales de alerta</h2><p>Las alertas automáticas se generan cuando se superan estos valores</p></div>
+        <div className="reference-fields three-fields">
+          {field('Demanda máxima', 'maxDemand', 'kW', 'Potencia total contratada. Superarla genera una alerta crítica.')}
+          {field('Pico fuera de horario', 'afterHoursPeak', 'W por circuito', 'Consumo nocturno o en fin de semana que indica equipos encendidos.')}
+          {field('Límite de espera (standby)', 'standbyLimit', 'W por circuito', 'Carga base sostenida que delata vampirismo energético.')}
+        </div>
+      </section>
+      <section className="panel reference-panel zones-panel">
+        <div className="reference-panel-heading"><h2>Circuitos y zonas monitoreadas</h2><p>{config.circuits.filter(Boolean).length} de {monitoredZones.length} circuitos activos · cada uno con un nodo ESP32 + SCT-013</p></div>
+        <div className="zones-list">
+          {monitoredZones.map(([name, id, description], index) => (
+            <div className="zone-row" key={id}>
+              <span className="zone-copy"><strong>{name} <small>{id}</small></strong><span>{description}</span></span>
+              <button className={`zone-switch ${config.circuits[index] ? 'zone-switch-on' : ''}`} onClick={() => toggleCircuit(index)} aria-label={`${config.circuits[index] ? 'Desactivar' : 'Activar'} ${name}`} aria-pressed={config.circuits[index]}><i /></button>
+            </div>
+          ))}
+        </div>
+      </section>
+      <div className="settings-reference-actions"><button className="button" onClick={resetSettings}><Icon name="clock" size={15} /> Restablecer valores predeterminados</button></div>
+    </div>
+  );
+}
+
+function HelpPage({ goTo }) {
+  const [query, setQuery] = useState('');
+  const helpTopics = [
+    { title: '¿Cómo interpreto el consumo actual?', text: 'El resumen compara el consumo acumulado del periodo con el periodo anterior. Usa el Histórico para cambiar la escala y exportar las lecturas.' },
+    { title: '¿Qué hago cuando recibo una alerta?', text: 'Abre el Centro de alertas, revisa el circuito y la descripción del evento. Al terminar la revisión, márcala como resuelta para mantener la lista al día.' },
+    { title: '¿Cómo configuro tarifas y umbrales?', text: 'En Configuración puedes actualizar la tarifa eléctrica, el factor de emisión, el horario operativo y los límites que generan alertas.' },
+    { title: '¿Cómo administro los circuitos?', text: 'Activa o pausa cada zona en Configuración. El estado se guarda en este navegador y puedes restaurar los valores predeterminados cuando quieras.' },
+  ];
+  const topics = helpTopics.filter(({ title, text }) => `${title} ${text}`.toLowerCase().includes(query.trim().toLowerCase()));
   return (
     <div className="page-content page-enter">
-      <PageHeading eyebrow="PREFERENCIAS" title="Configuración" description="Administra tu espacio, tarifas y notificaciones.">
-        <Button variant="primary" onClick={() => { setSaved(true); window.setTimeout(() => setSaved(false), 3500); }}><Icon name="check" size={16} /> Guardar cambios</Button>
-      </PageHeading>
-      {saved && <div className="toast-message"><Icon name="check" size={16} />Cambios guardados correctamente<button onClick={() => setSaved(false)} aria-label="Cerrar"><Icon name="close" size={15} /></button></div>}
-      <div className="settings-layout">
-        <nav className="settings-nav" aria-label="Secciones de configuración"><a className="settings-nav-active" href="#building"><Icon name="building" size={17} />Edificio</a><a href="#tariff"><Icon name="bolt" size={17} />Tarifas de energía</a><a href="#notifications"><Icon name="bell" size={17} />Notificaciones</a><a href="#account"><Icon name="user" size={17} />Mi cuenta</a></nav>
-        <div className="settings-sections">
-          <section className="panel settings-panel" id="building">
-            <div className="settings-section-head"><div className="settings-section-icon"><Icon name="building" /></div><div><h2>Información del edificio</h2><p>Datos generales de tu espacio de monitoreo.</p></div></div>
-            <div className="form-grid"><label className="field-label">Nombre del edificio<input value={form.name} onChange={update('name')} /></label><label className="field-label">Ubicación<input defaultValue="Campus Norte, Monterrey, NL" /></label><label className="field-label">Zona horaria<select defaultValue="America/Monterrey"><option value="America/Monterrey">GMT−6 · Ciudad de México</option><option value="America/Cancun">GMT−5 · Cancún</option></select></label><label className="field-label">Superficie (m²)<input defaultValue="4,850" /></label></div>
-            <div className="settings-note"><Icon name="help" size={16} /><span>Los cambios en la ubicación pueden afectar los horarios operativos y los reportes.</span></div>
-          </section>
-          <section className="panel settings-panel" id="tariff">
-            <div className="settings-section-head"><div className="settings-section-icon lime-bg"><Icon name="bolt" /></div><div><h2>Tarifas de energía</h2><p>Configura los valores para calcular tus costos estimados.</p></div></div>
-            <div className="form-grid"><label className="field-label">Tarifa base <div className="input-with-unit"><span>$</span><input value={form.rate} onChange={update('rate')} /><small>MXN / kWh</small></div></label><label className="field-label">Tarifa intermedia <div className="input-with-unit"><span>$</span><input defaultValue="3.42" /><small>MXN / kWh</small></div></label><label className="field-label">Tarifa punta <div className="input-with-unit"><span>$</span><input defaultValue="3.91" /><small>MXN / kWh</small></div></label><label className="field-label">Umbral de demanda <div className="input-with-unit"><input value={form.threshold} onChange={update('threshold')} /><small>kW</small></div></label></div>
-            <div className="settings-note"><Icon name="help" size={16} /><span>Las tarifas son estimaciones. Consulta tu recibo de CFE para actualizarlas.</span></div>
-          </section>
-          <section className="panel settings-panel" id="notifications">
-            <div className="settings-section-head"><div className="settings-section-icon purple-bg"><Icon name="bell" /></div><div><h2>Notificaciones</h2><p>Elige cuándo y cómo quieres recibir actualizaciones.</p></div></div>
-            <label className="toggle-row"><span><strong>Alertas críticas</strong><small>Notificarme inmediatamente sobre eventos críticos.</small></span><button className={`switch ${toggles.critical ? 'switch-on' : ''}`} onClick={() => toggle('critical')} aria-label="Activar alertas críticas" aria-pressed={toggles.critical}><i /></button></label>
-            <label className="toggle-row"><span><strong>Reportes mensuales</strong><small>Recibir un resumen energético al inicio de cada mes.</small></span><button className={`switch ${toggles.reports ? 'switch-on' : ''}`} onClick={() => toggle('reports')} aria-label="Activar reportes mensuales" aria-pressed={toggles.reports}><i /></button></label>
-            <label className="toggle-row"><span><strong>Resumen semanal</strong><small>Recibir una actualización cada lunes por la mañana.</small></span><button className={`switch ${toggles.weekly ? 'switch-on' : ''}`} onClick={() => toggle('weekly')} aria-label="Activar resumen semanal" aria-pressed={toggles.weekly}><i /></button></label>
-          </section>
-          <section className="panel settings-panel" id="account">
-            <div className="settings-section-head"><div className="settings-section-icon blue-bg"><Icon name="user" /></div><div><h2>Mi cuenta</h2><p>Actualiza los datos de acceso a tu cuenta.</p></div></div>
-            <label className="field-label account-email-label">Correo electrónico<input value={form.email} onChange={update('email')} type="email" /></label>
-            <button className="text-button password-button"><Icon name="lock" size={15} /> Cambiar contraseña <Icon name="chevron" size={14} /></button>
-          </section>
-        </div>
-      </div>
-      <footer className="page-footer"><span>BitWatt GridSense · Versión 1.0.0</span><span>Los cambios se aplican a todos los miembros del espacio</span></footer>
+      <PageHeading eyebrow="ASISTENCIA BITWATT" title="Centro de ayuda" description="Encuentra respuestas rápidas sobre monitoreo, alertas y configuración." />
+      <section className="panel help-intro">
+        <span className="help-intro-icon"><Icon name="help" size={22} /></span>
+        <div><h2>¿En qué podemos ayudarte?</h2><p>Consulta las guías o visita directamente el apartado que necesitas.</p></div>
+        <label className="search-field help-search"><Icon name="search" size={16} /><input placeholder="Buscar en la ayuda..." aria-label="Buscar en la ayuda" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+      </section>
+      <section className="help-links" aria-label="Accesos rápidos">
+        <button className="panel help-link-card" onClick={() => goTo('overview')}><Icon name="grid" /><span><strong>Resumen</strong><small>Consumo y eficiencia del edificio</small></span><Icon name="chevron" size={16} /></button>
+        <button className="panel help-link-card" onClick={() => goTo('history')}><Icon name="chart" /><span><strong>Histórico</strong><small>Revisa y exporta tus lecturas</small></span><Icon name="chevron" size={16} /></button>
+        <button className="panel help-link-card" onClick={() => goTo('alerts')}><Icon name="bell" /><span><strong>Alertas</strong><small>Revisa eventos y resuélvelos</small></span><Icon name="chevron" size={16} /></button>
+        <button className="panel help-link-card" onClick={() => goTo('settings')}><Icon name="sliders" /><span><strong>Configuración</strong><small>Tarifas, horarios y circuitos</small></span><Icon name="chevron" size={16} /></button>
+      </section>
+      <section className="panel help-faq">
+        <div className="panel-heading"><div><h2>Preguntas frecuentes</h2><p>Guías rápidas para las tareas más comunes.</p></div></div>
+        <div className="help-faq-list">{topics.length ? topics.map(({ title, text }) => <details key={title}><summary>{title}<Icon name="down" size={16} /></summary><p>{text}</p></details>) : <div className="help-empty">No encontramos artículos para “{query}”. Prueba con otra búsqueda.</div>}</div>
+      </section>
+      <section className="help-contact"><span><strong>¿Necesitas más ayuda?</strong><small>Escríbenos y el equipo de BitWatt te orientará.</small></span><a className="button" href="mailto:soporte@bitwatt.mx?subject=Ayuda%20con%20BitWatt"><Icon name="help" size={15} /> Contactar soporte</a></section>
     </div>
   );
 }
@@ -483,12 +604,13 @@ export default function App() {
   return (
     <div className="app-shell">
       <Sidebar page={route} setPage={goTo} open={menuOpen} onClose={() => setMenuOpen(false)} onLogout={() => goTo('login')} />
-      <div className="main-shell"><Topbar title={pageTitles[route][0]} onMenu={() => setMenuOpen(true)} onLogout={() => goTo('login')} />
+      <div className="main-shell"><Topbar title={pageTitles[route][0]} onMenu={() => setMenuOpen(true)} onLogout={() => goTo('login')} onNotifications={() => goTo('alerts')} />
         <main className="main-content">
           {route === 'overview' && <Overview goTo={goTo} />}
           {route === 'alerts' && <AlertsPage />}
           {route === 'history' && <HistoryPage />}
           {route === 'settings' && <SettingsPage />}
+          {route === 'help' && <HelpPage goTo={goTo} />}
         </main>
       </div>
     </div>
