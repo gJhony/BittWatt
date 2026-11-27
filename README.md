@@ -18,7 +18,7 @@ GridSense captura, centraliza y visualiza el consumo eléctrico con alta frecuen
 - [Problemática y Propuesta de Valor](#-problemática-y-propuesta-de-valor)
 - [Arquitectura del Sistema](#-arquitectura-del-sistema)
 - [Características Principales](#-características-principales)
-- [Modelo de Base de Datos (`bitwatt_db`)](#-modelo-de-base-de-datos-bitwatt_db)
+- [Modelo de Base de Datos (`bitwatt_db`)](#-modelo-de-base-de-datos--bitwatt_db)
 - [Instalación y Despliegue](#-instalación-y-despliegue)
 - [Alineación con Sustentabilidad (ODS)](#-alineación-con-sustentabilidad-ods)
 - [Equipo de Desarrollo](#-equipo-de-desarrollo)
@@ -57,6 +57,8 @@ El sistema está desacoplado en capas independientes para facilitar pruebas, esc
                                                 [Dashboard Web en React]
 ```
 
+Revisa también el [modelo de base de datos (`bitwatt_db`)](#-modelo-de-base-de-datos--bitwatt_db) y el script SQL [`bitwatt_db_1711.sql`](bitwatt_db_1711.sql) (si quedó dentro de una carpeta, cambia `bitwatt_db_1711.sql` por `ruta/bitwatt_db_1711.sql`).
+
 ---
 
 ## ✨ Características Principales
@@ -72,7 +74,7 @@ El sistema está desacoplado en capas independientes para facilitar pruebas, esc
 
 ## 🗄️ Modelo de Base de Datos (`bitwatt_db`)
 
-El esquema relacional en **MySQL 8.0** está disponible en [`bitwatt_db_1711.sql`](./bitwatt_db_1711.sql) y organiza la información en bloques separados:
+El esquema relacional en **MySQL 8.0** está en [bitwatt_db_1711.sql](bitwatt_db_1711.sql) (ajusta la ruta si está en otra carpeta del repo) y organiza la información en bloques separados:
 
 - **Estructura física y zonas:** Catálogos de edificios, pisos, zonas y circuitos eléctricos para ubicar cada medición.
 - **Nodos y sensores:** Registro de nodos ESP32 y sensores SCT-013 asociados a sus respectivos circuitos y estados operativos.
@@ -91,7 +93,7 @@ El proyecto se plantea de forma progresiva —iniciando con el prototipo de inte
    cd <carpeta-del-proyecto>
    ```
 2. **Preparar la base de datos:**
-   - Crea la base y carga el esquema desde [`bitwatt_db_1711.sql`](./bitwatt_db_1711.sql) en MySQL 8.0 (nota: la documentación de formulación también contempla PostgreSQL en su propuesta inicial).
+   - Crea la base y carga el esquema desde [bitwatt_db_1711.sql](bitwatt_db_1711.sql) en MySQL 8.0 (nota: la documentación de formulación también contempla PostgreSQL en su propuesta inicial).
 3. **Configurar y levantar servicios:**
    - Configura las credenciales de base de datos, broker **MQTT** y puertos en las variables de entorno del backend (**Node.js**) y del frontend (**React**).
    - Instala dependencias y ejecuta los servicios correspondientes de backend y frontend en entorno local o en un **VPS** (con dominio y SSL/TLS en etapas posteriores).
@@ -120,4 +122,4 @@ El monitoreo por sí solo no reduce el gasto automáticamente; su valor está en
 | **Mario Banda Sánchez** | `240597` | Desarrollo Backend y diseño de bases de datos |
 | **Jhonatan Eliel Ibarra Gonzales** | `240080` | Desarrollo Backend y administración de bases de datos |
 | **Vanessa Vergara Domínguez** | `240270` | Diseño UI/UX y prototipado en Figma |
-| **Harold Alexis Ramírez Peralta** | `240497` | Diseño de experiencia de usuario (UX), navegación e interacciones en Figma | 
+| **Harold Alexis Ramírez Peralta** | `240497` | Diseño de experiencia de usuario (UX), navegación e interacciones en Figma |
