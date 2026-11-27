@@ -1,4 +1,4 @@
-# <img src="./assets/logo.png" alt="BitWatt — GridSense Logo" width="64" align="absmiddle" /> BitWatt — GridSense
+# <img src="./assets/logo.png" alt="BitWatt — GridSense Logo" width="86" align="absmiddle" /> BitWatt — GridSense
 
 ![Status](https://img.shields.io/badge/Estado-Prototipo%20%2F%20MVP-blue)
 ![Hardware](https://img.shields.io/badge/IoT-ESP32%20%7C%20SCT--013-00979D?logo=espressif&logoColor=white)
