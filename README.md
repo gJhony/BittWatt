@@ -121,3 +121,19 @@ El monitoreo por sí solo no reduce el gasto automáticamente; su valor está en
 | **Jhonatan Eliel Ibarra Gonzales** | `240080` | Desarrollo Backend y administración de bases de datos |
 | **Vanessa Vergara Domínguez** | `240270` | Diseño UI/UX y prototipado en Figma |
 | **Harold Alexis Ramírez Peralta** | `240497` | Diseño de experiencia de usuario (UX), navegación e interacciones en Figma |
+
+```mermaid
+flowchart TD
+    LIDER["👑 <b>Ricardo Gadiel Bobadilla Gabriel</b><br/><i>240349 • Líder del Proyecto, Coordinación y Frontend</i>"]
+
+    LIDER --> FE["💻 <b>Margaret Isabela Rojas de Leon</b><br/><i>240242 • Desarrollo Frontend y Documentación Técnica</i>"]
+    LIDER --> BE1["⚙️ <b>Mario Banda Sánchez</b><br/><i>240597 • Desarrollo Backend y Diseño de BD</i>"]
+    LIDER --> BE2["🗄️ <b>Jhonatan Eliel Ibarra Gonzales</b><br/><i>240080 • Desarrollo Backend y Administración de BD</i>"]
+    LIDER --> UX1["🎨 <b>Vanessa Vergara Domínguez</b><br/><i>240270 • Diseño UI/UX y Prototipado en Figma</i>"]
+    LIDER --> UX2["🧭 <b>Harold Alexis Ramírez Peralta</b><br/><i>240497 • Experiencia de Usuario (UX) e Interacciones</i>"]
+
+    classDef leader fill:#163020,stroke:#84CC16,stroke-width:2px,color:#FFFFFF
+    classDef member fill:#0F172A,stroke:#38BDF8,stroke-width:1.5px,color:#F8FAFC
+
+    class LIDER leader
+    class FE,BE1,BE2,UX1,UX2 member
