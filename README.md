@@ -1,4 +1,4 @@
-# <img src="./assets/logo.png" alt="BitWatt — GridSense Logo" width="32" align="absmiddle" /> BitWatt — GridSense
+# <img src="./assets/logo.png" alt="BitWatt — GridSense Logo" width="64" align="absmiddle" /> BitWatt — GridSense
 
 ![Status](https://img.shields.io/badge/Estado-Prototipo%20%2F%20MVP-blue)
 ![Hardware](https://img.shields.io/badge/IoT-ESP32%20%7C%20SCT--013-00979D?logo=espressif&logoColor=white)
@@ -121,4 +121,3 @@ El monitoreo por sí solo no reduce el gasto automáticamente; su valor está en
 | **Jhonatan Eliel Ibarra Gonzales** | `240080` | Desarrollo Backend y administración de bases de datos |
 | **Vanessa Vergara Domínguez** | `240270` | Diseño UI/UX y prototipado en Figma |
 | **Harold Alexis Ramírez Peralta** | `240497` | Diseño de experiencia de usuario (UX), navegación e interacciones en Figma |
-
