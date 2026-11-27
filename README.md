@@ -87,8 +87,8 @@ El proyecto se plantea de forma progresiva —iniciando con el prototipo de inte
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone <url-del-repositorio>
-   cd <carpeta-del-proyecto>
+   git clone <https://github.com/gJhony/BittWatt.git>
+   cd <carpeta-del-proyecto(BITWATT)>
    ```
 2. **Preparar la base de datos:**
    - Crea la base y carga el esquema desde [`./database/bitwatt_db_1711.sql`](./database/bitwatt_db_1711.sql) en MySQL 8.0 (nota: la documentación de formulación también contempla PostgreSQL en su propuesta inicial).
