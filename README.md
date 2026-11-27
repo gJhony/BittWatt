@@ -120,4 +120,4 @@ El monitoreo por sí solo no reduce el gasto automáticamente; su valor está en
 | **Mario Banda Sánchez** | `240597` | Desarrollo Backend y diseño de bases de datos |
 | **Jhonatan Eliel Ibarra Gonzales** | `240080` | Desarrollo Backend y administración de bases de datos |
 | **Vanessa Vergara Domínguez** | `240270` | Diseño UI/UX y prototipado en Figma |
-| **Harold Alexis Ramírez Peralta** | `240497` | Diseño de experiencia de usuario (UX), navegación e interacciones en Figma |
+| **Harold Alexis Ramírez Peralta** | `240497` | Diseño de experiencia de usuario (UX), navegación e interacciones en Figma | 
