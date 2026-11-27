@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./assets/logo.png" alt="BitWatt — GridSense Logo" width="180" />
+</p>
+
 # ⚡ BitWatt — GridSense
 
 ![Status](https://img.shields.io/badge/Estado-Prototipo%20%2F%20MVP-blue)
@@ -87,16 +91,16 @@ El proyecto se plantea de forma progresiva —iniciando con el prototipo de inte
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone <https://github.com/gJhony/BittWatt.git>
-   cd <carpeta-del-proyecto(BITWATT)>
+   git clone [https://github.com/gJhony/BittWatt.git](https://github.com/gJhony/BittWatt.git)
+   cd BittWatt
    ```
 2. **Preparar la base de datos:**
-   - Crea la base y carga el esquema desde [`./database/bitwatt_db_1711.sql`](./database/bitwatt_db_1711.sql) en MySQL 8.0 (nota: la documentación de formulación también contempla PostgreSQL en su propuesta inicial).
+- Crea la base y carga el esquema desde [`./database/bitwatt_db_1711.sql`](./database/bitwatt_db_1711.sql) en MySQL 8.0 (nota: la documentación de formulación también contempla PostgreSQL en su propuesta inicial).
 3. **Configurar y levantar servicios:**
-   - Configura las credenciales de base de datos, broker **MQTT** y puertos en las variables de entorno del backend (`./backend/`) y del frontend (`./frontend/`).
-   - Instala dependencias y ejecuta los servicios correspondientes de backend y frontend en entorno local o en un **VPS** (con dominio y SSL/TLS en etapas posteriores).
+- Configura las credenciales de base de datos, broker **MQTT** y puertos en las variables de entorno del backend (`./backend/`) y del frontend (`./frontend/`).
+  - Instala dependencias y ejecuta los servicios correspondientes de backend y frontend en entorno local o en un **VPS** (con dominio y SSL/TLS en etapas posteriores).
 4. **Hardware e integración IoT (fase física / piloto):**
-   - Calibra los sensores **SCT-013** y el nodo **ESP32** sobre red Wi-Fi local y valida la telemetría por MQTT en un circuito controlado antes de ampliar a más zonas.
+- Calibra los sensores **SCT-013** y el nodo **ESP32** sobre red Wi-Fi local y valida la telemetría por MQTT en un circuito controlado antes de ampliar a más zonas.
 
 ---
 
@@ -121,3 +125,4 @@ El monitoreo por sí solo no reduce el gasto automáticamente; su valor está en
 | **Jhonatan Eliel Ibarra Gonzales** | `240080` | Desarrollo Backend y administración de bases de datos |
 | **Vanessa Vergara Domínguez** | `240270` | Diseño UI/UX y prototipado en Figma |
 | **Harold Alexis Ramírez Peralta** | `240497` | Diseño de experiencia de usuario (UX), navegación e interacciones en Figma |
+````[cite: 2, 3, 4]
